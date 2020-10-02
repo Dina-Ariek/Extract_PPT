@@ -1,0 +1,38 @@
+# List all files
+import os
+import pysolr
+from pptx import Presentation
+
+solr_url = 'http://192.168.15.205:8983/solr/kotekaman_text'
+solr = pysolr.Solr(solr_url, always_commit=True)
+folder = os.getcwd()
+list_file=[]
+list_path=[]
+result=[]
+data1=[]
+for (dirpath, dirnames, filenames) in os.walk('.'):
+    for f in filenames: 
+        if os.path.splitext(f)[1][1:].strip() in ("ppt","pptx"):  #filter extension type
+            list_file.append(f)
+            list_path1=(folder+(str(os.path.join(dirpath,f)))[1:])
+            list_path.append(list_path1)     
+            prs = Presentation(f)
+            data1=[]
+            for slide in prs.slides:
+                
+                for shape in slide.shapes:
+                    if not shape.has_text_frame:
+                        continue
+                    for paragraph in shape.text_frame.paragraphs:
+                        for run in paragraph.runs:
+                            data1.append(run.text)
+                            a=str("".join(data1))
+            result.append(a)
+            solr.add(    [
+                    {
+                    "filename":f,
+                    "location":list_path1,
+                    "data": result
+         
+                    }]
+            )
