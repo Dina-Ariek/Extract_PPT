@@ -26,13 +26,13 @@ for (dirpath, dirnames, filenames) in os.walk('.'):
                     for paragraph in shape.text_frame.paragraphs:
                         for run in paragraph.runs:
                             data1.append(run.text)
-                            a=str("".join(data1))
-            result.append(a)
+                            data=str("".join(data1))
+            result.append(data)
             solr.add(    [
                     {
                     "filename":f,
                     "location":list_path1,
-                    "data": result
-         
+                    "data": data
+
                     }]
             )
